@@ -29,9 +29,14 @@ COLOR_RED := \033[31m
 # Generate
 # =============================================================================
 
+# .PHONY: generate
+# generate: openapi-generate openapi-ts-generate events-generate ## Generate all code (OpenAPI Go + TS + AsyncAPI/Events)
+# 	@printf "$(COLOR_GREEN)✓ All generation complete!$(COLOR_RESET)\n"
+
 .PHONY: generate
-generate: openapi-generate openapi-ts-generate events-generate ## Generate all code (OpenAPI Go + TS + AsyncAPI/Events)
+generate: openapi-generate openapi-ts-generate ## Generate all code (OpenAPI Go + TS + AsyncAPI/Events)
 	@printf "$(COLOR_GREEN)✓ All generation complete!$(COLOR_RESET)\n"
+
 
 .PHONY: clean
 clean: openapi-clean openapi-ts-clean events-clean ## Clean all generated files
