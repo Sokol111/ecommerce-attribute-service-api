@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Attribute API
   version: 1.0.0
-  description: API for managing product attributes, attribute options, and category-attribute mappings
+  description: API for managing product attributes and category-attribute mappings
 paths:
   # ==================== ATTRIBUTES ====================
   /v1/attribute/create:
@@ -56,6 +56,11 @@ paths:
                 enabled:
                   type: boolean
                   example: true
+                options:
+                  type: array
+                  description: Attribute options (for select, multiselect types)
+                  items:
+                    $ref: "#/components/schemas/AttributeOptionInput"
               required:
                 - name
                 - slug
@@ -144,6 +149,11 @@ paths:
                   type: integer
                   example: 1
                   minimum: 1
+                options:
+                  type: array
+                  description: Attribute options (for select, multiselect types)
+                  items:
+                    $ref: "#/components/schemas/AttributeOptionInput"
               required:
                 - id
                 - name
@@ -321,340 +331,6 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "409":
           description: Attribute is in use and cannot be deleted
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  # ==================== ATTRIBUTE OPTIONS ====================
-  /v1/attribute/{attributeId}/option/create:
-    post:
-      summary: Create a new attribute option
-      operationId: createAttributeOption
-      tags:
-        - Attribute Options
-      parameters:
-        - name: attributeId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                  pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                value:
-                  type: string
-                  example: "Red"
-                  minLength: 1
-                  maxLength: 100
-                slug:
-                  type: string
-                  example: "red"
-                  minLength: 1
-                  maxLength: 50
-                  pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-                colorCode:
-                  type: string
-                  example: "#FF0000"
-                  pattern: "^#[0-9A-Fa-f]{6}$"
-                sortOrder:
-                  type: integer
-                  example: 1
-                  minimum: 0
-                  maximum: 10000
-                enabled:
-                  type: boolean
-                  example: true
-              required:
-                - value
-                - slug
-                - enabled
-      responses:
-        "200":
-          description: Attribute option created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AttributeOptionResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Attribute not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
-          description: Option with this slug already exists for this attribute
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/attribute/{attributeId}/option/update:
-    put:
-      summary: Update an existing attribute option
-      operationId: updateAttributeOption
-      tags:
-        - Attribute Options
-      parameters:
-        - name: attributeId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                  pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                value:
-                  type: string
-                  example: "Red"
-                  minLength: 1
-                  maxLength: 100
-                slug:
-                  type: string
-                  example: "red"
-                  minLength: 1
-                  maxLength: 50
-                  pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-                colorCode:
-                  type: string
-                  example: "#FF0000"
-                  pattern: "^#[0-9A-Fa-f]{6}$"
-                sortOrder:
-                  type: integer
-                  example: 1
-                  minimum: 0
-                  maximum: 10000
-                enabled:
-                  type: boolean
-                  example: true
-                version:
-                  type: integer
-                  example: 1
-                  minimum: 1
-              required:
-                - id
-                - value
-                - slug
-                - enabled
-                - version
-      responses:
-        "200":
-          description: Attribute option updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AttributeOptionResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Attribute or option not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
-          description: Option with this slug already exists for this attribute
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "412":
-          description: Version mismatch
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/attribute/{attributeId}/option/get/{optionId}:
-    get:
-      summary: Get an attribute option by ID
-      operationId: getAttributeOptionById
-      tags:
-        - Attribute Options
-      parameters:
-        - name: attributeId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: optionId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Attribute option retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AttributeOptionResponse"
-        "404":
-          description: Attribute or option not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/attribute/{attributeId}/option/list:
-    get:
-      summary: Get a paginated list of attribute options
-      operationId: getAttributeOptionList
-      tags:
-        - Attribute Options
-      parameters:
-        - name: attributeId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-          description: Page number (must be greater than 0)
-        - name: size
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 20
-          description: Number of items per page (max 100)
-        - name: enabled
-          in: query
-          required: false
-          schema:
-            type: boolean
-            example: true
-          description: Filter by enabled status
-        - name: sort
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [value, slug, sortOrder, createdAt, modifiedAt]
-            example: sortOrder
-          description: Field to sort by
-        - name: order
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-            example: asc
-          description: Sort order
-      responses:
-        "200":
-          description: List of attribute options retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AttributeOptionListResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Attribute not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/attribute/{attributeId}/option/delete/{optionId}:
-    delete:
-      summary: Delete an attribute option by ID
-      operationId: deleteAttributeOption
-      tags:
-        - Attribute Options
-      parameters:
-        - name: attributeId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: optionId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Attribute option deleted successfully
-        "404":
-          description: Attribute or option not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
-          description: Option is in use and cannot be deleted
           content:
             application/problem+json:
               schema:
@@ -1020,6 +696,11 @@ components:
         enabled:
           type: boolean
           example: true
+        options:
+          type: array
+          description: Attribute options (for select, multiselect types)
+          items:
+            $ref: "#/components/schemas/AttributeOption"
         createdAt:
           type: string
           format: date-time
@@ -1029,54 +710,47 @@ components:
           format: date-time
           example: "2023-01-02T00:00:00Z"
 
-    # ==================== ATTRIBUTE OPTION SCHEMAS ====================
-    AttributeOptionListResponse:
+    AttributeOptionInput:
       type: object
+      description: Input for creating/updating an attribute option
       required:
-        - items
-        - page
-        - size
-        - total
+        - value
+        - slug
+        - enabled
       properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/AttributeOptionResponse"
-        page:
+        value:
+          type: string
+          example: "Red"
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          example: "red"
+          minLength: 1
+          maxLength: 50
+          pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        colorCode:
+          type: string
+          example: "#FF0000"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        sortOrder:
           type: integer
           example: 1
-          description: Current page number
-        size:
-          type: integer
-          example: 20
-          description: Number of items per page
-        total:
-          type: integer
-          example: 100
-          description: Total number of items
+          minimum: 0
+          maximum: 10000
+        enabled:
+          type: boolean
+          example: true
 
-    AttributeOptionResponse:
+    AttributeOption:
       type: object
+      description: Embedded attribute option
       required:
-        - id
-        - version
-        - attributeId
         - value
         - slug
         - sortOrder
         - enabled
-        - createdAt
-        - modifiedAt
       properties:
-        id:
-          type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        version:
-          type: integer
-          example: 1
-        attributeId:
-          type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
         value:
           type: string
           example: "Red"
@@ -1092,14 +766,6 @@ components:
         enabled:
           type: boolean
           example: true
-        createdAt:
-          type: string
-          format: date-time
-          example: "2023-01-01T00:00:00Z"
-        modifiedAt:
-          type: string
-          format: date-time
-          example: "2023-01-02T00:00:00Z"
 
     # ==================== CATEGORY ATTRIBUTE SCHEMAS ====================
     CategoryAttributeListResponse:
