@@ -60,6 +60,8 @@ paths:
                 - name
                 - slug
                 - type
+                - defaultFilterable
+                - defaultSearchable
                 - enabled
       responses:
         "200":
@@ -147,6 +149,8 @@ paths:
                 - name
                 - slug
                 - type
+                - defaultFilterable
+                - defaultSearchable
                 - enabled
                 - version
       responses:
