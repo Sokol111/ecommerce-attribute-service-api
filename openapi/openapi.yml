@@ -36,8 +36,8 @@ paths:
                   pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
                 type:
                   type: string
-                  enum: [select, multiselect, range, boolean, text]
-                  example: "select"
+                  enum: [single, multiple, range, boolean, text]
+                  example: "single"
                 unit:
                   type: string
                   example: "GB"
@@ -52,7 +52,7 @@ paths:
                   example: true
                 options:
                   type: array
-                  description: Attribute options (for select, multiselect types)
+                  description: Attribute options (for single, multiple types)
                   items:
                     $ref: "#/components/schemas/AttributeOptionInput"
               required:
@@ -117,8 +117,8 @@ paths:
                   pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
                 type:
                   type: string
-                  enum: [select, multiselect, range, boolean, text]
-                  example: "select"
+                  enum: [single, multiple, range, boolean, text]
+                  example: "single"
                 unit:
                   type: string
                   example: "GB"
@@ -137,7 +137,7 @@ paths:
                   minimum: 1
                 options:
                   type: array
-                  description: Attribute options (for select, multiselect types)
+                  description: Attribute options (for single, multiple types)
                   items:
                     $ref: "#/components/schemas/AttributeOptionInput"
               required:
@@ -253,7 +253,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [select, multiselect, range, boolean, text]
+            enum: [single, multiple, range, boolean, text]
           description: Filter by attribute type
         - name: sort
           in: query
@@ -381,8 +381,8 @@ components:
           example: "color"
         type:
           type: string
-          enum: [select, multiselect, range, boolean, text]
-          example: "select"
+          enum: [single, multiple, range, boolean, text]
+          example: "single"
         unit:
           type: string
           example: "GB"
@@ -394,7 +394,7 @@ components:
           example: true
         options:
           type: array
-          description: Attribute options (for select, multiselect types)
+          description: Attribute options (for single, multiple types)
           items:
             $ref: "#/components/schemas/AttributeOption"
         createdAt:
