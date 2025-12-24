@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Attribute API
   version: 1.0.0
-  description: API for managing product attributes and category-attribute mappings
+  description: API for managing product attributes
 paths:
   # ==================== ATTRIBUTES ====================
   /v1/attribute/create:
@@ -42,12 +42,6 @@ paths:
                   type: string
                   example: "GB"
                   maxLength: 20
-                defaultFilterable:
-                  type: boolean
-                  example: true
-                defaultSearchable:
-                  type: boolean
-                  example: false
                 sortOrder:
                   type: integer
                   example: 1
@@ -65,8 +59,6 @@ paths:
                 - name
                 - slug
                 - type
-                - defaultFilterable
-                - defaultSearchable
                 - enabled
       responses:
         "200":
@@ -131,12 +123,6 @@ paths:
                   type: string
                   example: "GB"
                   maxLength: 20
-                defaultFilterable:
-                  type: boolean
-                  example: true
-                defaultSearchable:
-                  type: boolean
-                  example: false
                 sortOrder:
                   type: integer
                   example: 1
@@ -159,8 +145,6 @@ paths:
                 - name
                 - slug
                 - type
-                - defaultFilterable
-                - defaultSearchable
                 - enabled
                 - version
       responses:
@@ -342,286 +326,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Problem"
 
-  # ==================== CATEGORY ATTRIBUTES ====================
-  /v1/category/{categoryId}/attribute/assign:
-    post:
-      summary: Assign an attribute to a category
-      operationId: assignAttributeToCategory
-      tags:
-        - Category Attributes
-      parameters:
-        - name: categoryId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                  pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                attributeId:
-                  type: string
-                  format: uuid
-                  pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                required:
-                  type: boolean
-                  example: false
-                sortOrder:
-                  type: integer
-                  example: 1
-                  minimum: 0
-                  maximum: 10000
-                filterable:
-                  type: boolean
-                  example: true
-                  description: Override default filterable setting for this category
-                searchable:
-                  type: boolean
-                  example: false
-                  description: Override default searchable setting for this category
-                enabled:
-                  type: boolean
-                  example: true
-              required:
-                - attributeId
-                - enabled
-      responses:
-        "200":
-          description: Attribute assigned to category successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CategoryAttributeResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Category or attribute not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
-          description: Attribute is already assigned to this category
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/category/{categoryId}/attribute/update:
-    put:
-      summary: Update category attribute assignment
-      operationId: updateCategoryAttribute
-      tags:
-        - Category Attributes
-      parameters:
-        - name: categoryId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                  pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                required:
-                  type: boolean
-                  example: false
-                sortOrder:
-                  type: integer
-                  example: 1
-                  minimum: 0
-                  maximum: 10000
-                filterable:
-                  type: boolean
-                  example: true
-                  description: Override default filterable setting for this category
-                searchable:
-                  type: boolean
-                  example: false
-                  description: Override default searchable setting for this category
-                enabled:
-                  type: boolean
-                  example: true
-                version:
-                  type: integer
-                  example: 1
-                  minimum: 1
-              required:
-                - id
-                - enabled
-                - version
-      responses:
-        "200":
-          description: Category attribute updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CategoryAttributeResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Category attribute assignment not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "412":
-          description: Version mismatch
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/category/{categoryId}/attribute/list:
-    get:
-      summary: Get all attributes assigned to a category
-      operationId: getCategoryAttributeList
-      tags:
-        - Category Attributes
-      parameters:
-        - name: categoryId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-          description: Page number (must be greater than 0)
-        - name: size
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 20
-          description: Number of items per page (max 100)
-        - name: enabled
-          in: query
-          required: false
-          schema:
-            type: boolean
-            example: true
-          description: Filter by enabled status
-        - name: filterable
-          in: query
-          required: false
-          schema:
-            type: boolean
-            example: true
-          description: Filter by filterable status
-        - name: sort
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [sortOrder, createdAt, modifiedAt]
-            example: sortOrder
-          description: Field to sort by
-        - name: order
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-            example: asc
-          description: Sort order
-      responses:
-        "200":
-          description: List of category attributes retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CategoryAttributeListResponse"
-        "400":
-          description: Validation error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/category/{categoryId}/attribute/unassign/{assignmentId}:
-    delete:
-      summary: Remove an attribute assignment from a category
-      operationId: unassignAttributeFromCategory
-      tags:
-        - Category Attributes
-      parameters:
-        - name: categoryId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: assignmentId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Attribute unassigned from category successfully
-        "404":
-          description: Category attribute assignment not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
 components:
   schemas:
     # ==================== ATTRIBUTE SCHEMAS ====================
@@ -658,8 +362,6 @@ components:
         - name
         - slug
         - type
-        - defaultFilterable
-        - defaultSearchable
         - sortOrder
         - enabled
         - createdAt
@@ -684,12 +386,6 @@ components:
         unit:
           type: string
           example: "GB"
-        defaultFilterable:
-          type: boolean
-          example: true
-        defaultSearchable:
-          type: boolean
-          example: false
         sortOrder:
           type: integer
           example: 1
@@ -766,86 +462,6 @@ components:
         enabled:
           type: boolean
           example: true
-
-    # ==================== CATEGORY ATTRIBUTE SCHEMAS ====================
-    CategoryAttributeListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - total
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/CategoryAttributeResponse"
-        page:
-          type: integer
-          example: 1
-          description: Current page number
-        size:
-          type: integer
-          example: 20
-          description: Number of items per page
-        total:
-          type: integer
-          example: 100
-          description: Total number of items
-
-    CategoryAttributeResponse:
-      type: object
-      required:
-        - id
-        - version
-        - categoryId
-        - attributeId
-        - required
-        - sortOrder
-        - enabled
-        - createdAt
-        - modifiedAt
-      properties:
-        id:
-          type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        version:
-          type: integer
-          example: 1
-        categoryId:
-          type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        attributeId:
-          type: string
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        attribute:
-          $ref: "#/components/schemas/AttributeResponse"
-          description: Embedded attribute details (optional, included in list responses)
-        required:
-          type: boolean
-          example: false
-        sortOrder:
-          type: integer
-          example: 1
-        filterable:
-          type: boolean
-          example: true
-          description: Override for this category (null means use attribute default)
-        searchable:
-          type: boolean
-          example: false
-          description: Override for this category (null means use attribute default)
-        enabled:
-          type: boolean
-          example: true
-        createdAt:
-          type: string
-          format: date-time
-          example: "2023-01-01T00:00:00Z"
-        modifiedAt:
-          type: string
-          format: date-time
-          example: "2023-01-02T00:00:00Z"
 
     # ==================== COMMON SCHEMAS ====================
     Problem:
